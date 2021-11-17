@@ -1,0 +1,32 @@
+{
+  "name": "chess-player",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon | pino-pretty -i pid,hostname -t \"yyyy-mm-dd HH:MM:ss\"",
+    "dev:deploy-commands": "ts-node src/deploy-commands.ts | pino-pretty -i pid,hostname -t \"yyyy-mm-dd HH:MM:ss\"",
+    "build": "tsc",
+    "deploy-commands": "NODE_ENV=production node src/deploy-commands.ts",
+    "start": "NODE_ENV=production node ."
+  },
+  "devDependencies": {
+    "@types/chess.js": "^0.11.2",
+    "@types/node": "^16.11.6",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "@chrisoakman/chessboardjs": "^1.0.0",
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "chess": "^0.5.0",
+    "chess.js": "^0.12.0",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "pino": "^7.2.0",
+    "puppeteer": "^11.0.0"
+  }
+}
