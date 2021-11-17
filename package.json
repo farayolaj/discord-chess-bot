@@ -7,7 +7,7 @@
     "dev": "nodemon | pino-pretty -i pid,hostname -t \"yyyy-mm-dd HH:MM:ss\"",
     "dev:deploy-commands": "ts-node src/deploy-commands.ts | pino-pretty -i pid,hostname -t \"yyyy-mm-dd HH:MM:ss\"",
     "build": "tsc",
-    "deploy-commands": "NODE_ENV=production node src/deploy-commands.ts",
+    "deploy-commands": "NODE_ENV=production node build/deploy-commands.js",
     "start": "NODE_ENV=production node ."
   },
   "devDependencies": {

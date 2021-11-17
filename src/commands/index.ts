@@ -10,12 +10,12 @@ type Command = {
 };
 
 const commands = new Collection<string, Command>();
-const baseDir = path.join(process.cwd(), "src", "commands");
+const baseDir = __dirname;
 
 // Dynamically get all commands in the directory
 const commandFiles = fs
   .readdirSync(baseDir)
-  .filter((path) => path.endsWith(".ts") && !path.includes("index"))
+  .filter((path) => /.(t|j)s$/.test(path) && !path.includes("index"))
   .map((path) => path.slice(0, path.length - 3));
 
 for (const file of commandFiles) {
