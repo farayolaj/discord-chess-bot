@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { italic, SlashCommandBuilder } from "@discordjs/builders";
 import { CacheType, CommandInteraction } from "discord.js";
 
 export const data = new SlashCommandBuilder()
@@ -7,6 +7,15 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction<CacheType>) {
   await interaction.reply(
-    "I'll be able to help you later. But now, I'm unable to help"
+    `Slash Commands:
+    /start ${italic("user1")} ${italic(
+      "user2"
+    )} - Start a game with user1 playing white and user2 playing black
+    /move ${italic(
+      "pgnMove"
+    )} - Make a move using [Algebraic Notation](https://wikipedia.org/wiki/Algebraic_notation_(chess))
+    /board - Get image of board state
+    /cancel - Cancel the ongoing game
+    `
   );
 }
