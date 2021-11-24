@@ -16,5 +16,5 @@ jobs:
       - run: yarn build
       - run: yarn deploy-commands
         env:
-          CLIENT_ID: '${{ secret.CLIENT_ID }}'
-          TOKEN: '${{ secret.TOKEN }}'
+          CLIENT_ID: '${{ secrets.CLIENT_ID }}'
+          TOKEN: '${{ secrets.TOKEN }}'
