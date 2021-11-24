@@ -15,7 +15,7 @@ export async function execute(interaction: CommandInteraction<CacheType>) {
       "pgnMove"
     )} - Make a move using [Algebraic Notation](https://wikipedia.org/wiki/Algebraic_notation_(chess))
     /board - Get image of board state
-    /cancel - Cancel the ongoing game
+    /cancel - Cancel the current game
     `
   );
 }
