@@ -42,33 +42,47 @@ class Game {
   private currentPlayer: Player;
   private gameClient: AlgebraicGameClient;
   private altChess: ChessInstance;
-  private eventCb: (data: GameEventData) => void;
+  private history: string[];
 
   constructor(
     whiteId: string,
     blackId: string,
-    eventCb: (data: MoveEventData | AttackEventData | PromoteEventData) => void
+    eventCb: (data: GameEventData) => void,
+    history?: string[]
   ) {
     this.black = { id: blackId, colour: "black" };
     this.white = { id: whiteId, colour: "white" };
     this.currentPlayer = this.white;
     this.gameClient = Chess.create({ PGN: true });
     this.altChess = new ChessJs();
-    this.eventCb = eventCb;
+    this.history = [];
+
+    if (history) {
+      this.initializeState(history);
+    }
 
     this.gameClient.on("move", async (move) => {
       const nextPlayer = this.getNextPlayer();
 
-      await this.eventCb({
+      await eventCb({
         move,
-        player: this.currentPlayer,
-        nextPlayer: nextPlayer,
+        player: nextPlayer,
+        nextPlayer: this.currentPlayer,
         message: `Move made: ${move.algebraic}`,
         type: "MoveEvent",
       });
-      this.currentPlayer =
-        this.currentPlayer.colour === "white" ? this.black : this.white;
     });
+  }
+
+  /**
+   * Initialize board state from given PGN history
+   * @param history Array of PGN moves
+   */
+  private initializeState(history: string[]) {
+    for (const [idx, move] of history.entries()) {
+      const player = idx % 2 === 0 ? this.white : this.black;
+      this.makeMove(move, player.id);
+    }
   }
 
   /**
@@ -97,6 +111,11 @@ class Game {
     try {
       const res = this.gameClient.move(move);
       this.altChess.move(move);
+      this.history.push(move)
+
+      this.currentPlayer =
+        this.currentPlayer.colour === "white" ? this.black : this.white;
+
       return {
         move: res.move,
         player: currentPlayer,
@@ -133,6 +152,14 @@ class Game {
    */
   getMoveCount() {
     return this.altChess.history().length;
+  }
+
+  /**
+   * Get history of all moves made
+   * @returns Array of PGN moves
+   */
+  getHistory() {
+    return this.history;
   }
 }
 
