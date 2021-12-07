@@ -16,6 +16,8 @@ interface MoveEventData extends BaseEventData {
   type: "MoveEvent";
 }
 interface AttackEventData extends BaseEventData {
+  // If this is false, then the attack is a check, else it is a checkmate
+  isCheckMate: boolean;
   attackingSquare: Square;
   kingSquare: Square;
   type: "AttackEvent";
@@ -61,15 +63,43 @@ class Game {
       this.initializeState(history);
     }
 
-    this.gameClient.on("move", async (move) => {
+    this.gameClient.on("move", (move) => {
       const nextPlayer = this.getNextPlayer();
 
-      await eventCb({
+      eventCb({
         move,
         player: nextPlayer,
         nextPlayer: this.currentPlayer,
         message: `Move made: ${move.algebraic}`,
         type: "MoveEvent",
+      });
+    });
+
+    this.gameClient.on("check", (attack) => {
+      const affectedPlayer = this.currentPlayer;
+      const player = this.getNextPlayer();
+
+      eventCb({
+        ...attack,
+        type: "AttackEvent",
+        isCheckMate: false,
+        message: `${affectedPlayer.colour} has been checked`,
+        nextPlayer: affectedPlayer,
+        player,
+      });
+    });
+
+    this.gameClient.on("checkmate", (attack) => {
+      const affectedPlayer = this.currentPlayer;
+      const player = this.getNextPlayer();
+
+      eventCb({
+        ...attack,
+        type: "AttackEvent",
+        isCheckMate: true,
+        message: `${affectedPlayer.colour} has been checked`,
+        nextPlayer: affectedPlayer,
+        player,
       });
     });
   }
@@ -111,7 +141,7 @@ class Game {
     try {
       const res = this.gameClient.move(move);
       this.altChess.move(move);
-      this.history.push(move)
+      this.history.push(move);
 
       this.currentPlayer =
         this.currentPlayer.colour === "white" ? this.black : this.white;
