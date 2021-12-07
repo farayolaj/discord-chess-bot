@@ -3,6 +3,8 @@ on:
   push:
     paths:
     - 'src/commands/**'
+    branches:
+      - main
 jobs:
   deploy:
     name: Deploy Commands
