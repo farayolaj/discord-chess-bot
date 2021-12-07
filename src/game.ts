@@ -2,6 +2,7 @@ import Chess, { AlgebraicGameClient, Move, Square } from "chess";
 import { Chess as ChessJs, ChessInstance } from "chess.js";
 import InvalidMoveError from "./errors/InvalidMove";
 import OutOfTurnError from "./errors/OutOfTurn";
+import { toCapitalCase } from "./util";
 
 interface BaseEventData {
   /** Player that made the move that emitted this event */
@@ -75,31 +76,35 @@ class Game {
       });
     });
 
-    this.gameClient.on("check", (attack) => {
-      const affectedPlayer = this.currentPlayer;
-      const player = this.getNextPlayer();
+    (["check", "checkmate"] as const).forEach((eventType) =>
+      this.gameClient.on(eventType, (attack) => {
+        const affectedPlayer = this.currentPlayer;
+        const player = this.getNextPlayer();
+
+        eventCb({
+          ...attack,
+          type: "AttackEvent",
+          isCheckMate: eventType == "checkmate",
+          message: `${toCapitalCase(affectedPlayer.colour)} has been ${
+            eventType == "check" ? "checked" : "checkmated"
+          }`,
+          nextPlayer: affectedPlayer,
+          player,
+        });
+      })
+    );
+
+    this.gameClient.on("promote", (square) => {
+      const nextPlayer = this.getNextPlayer();
 
       eventCb({
-        ...attack,
-        type: "AttackEvent",
-        isCheckMate: false,
-        message: `${affectedPlayer.colour} has been checked`,
-        nextPlayer: affectedPlayer,
-        player,
-      });
-    });
-
-    this.gameClient.on("checkmate", (attack) => {
-      const affectedPlayer = this.currentPlayer;
-      const player = this.getNextPlayer();
-
-      eventCb({
-        ...attack,
-        type: "AttackEvent",
-        isCheckMate: true,
-        message: `${affectedPlayer.colour} has been checked`,
-        nextPlayer: affectedPlayer,
-        player,
+        square,
+        player: nextPlayer,
+        nextPlayer: this.currentPlayer,
+        message: `${toCapitalCase(nextPlayer.colour)} pawn promoted to ${
+          square.piece.type
+        }`,
+        type: "PromoteEvent",
       });
     });
   }

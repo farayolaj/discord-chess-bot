@@ -79,7 +79,7 @@ describe("Game", () => {
     game.makeMove("Nc3", "white");
 
     expect(cbMock).toBeCalledTimes(1);
-    expect(cbMock).toBeCalledWith(
+    expect(cbMock).toHaveBeenLastCalledWith(
       expect.objectContaining({
         type: "MoveEvent",
       })
@@ -172,7 +172,7 @@ describe("Game", () => {
     game.makeMove("Rd1+", "black");
 
     expect(cbMock).toBeCalledTimes(2);
-    expect(cbMock).toBeCalledWith(
+    expect(cbMock).toHaveBeenLastCalledWith(
       expect.objectContaining({ type: "AttackEvent", isCheckMate: false })
     );
   });
@@ -211,8 +211,39 @@ describe("Game", () => {
     game.makeMove("Qxd4#", "black");
 
     expect(cbMock).toBeCalledTimes(2);
-    expect(cbMock).toBeCalledWith(
+    expect(cbMock).toHaveBeenLastCalledWith(
       expect.objectContaining({ type: "AttackEvent", isCheckMate: true })
+    );
+  });
+
+  it("calls back on promoting move", () => {
+    const cbMock = jest.fn();
+
+    const history = [
+      "h4",
+      "h6",
+      "g4",
+      "h5",
+      "gxh5",
+      "g5",
+      "hxg5",
+      "Rxh5",
+      "Rxh5",
+      "Nxh6",
+      "Rxh6",
+      "f5",
+      "g6",
+      "f4",
+      "g7",
+      "f3",
+    ];
+
+    const game = new Game("white", "black", cbMock, history);
+    game.makeMove("g8=Q", "white");
+
+    expect(cbMock).toBeCalledTimes(2);
+    expect(cbMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: "PromoteEvent" })
     );
   });
 });
