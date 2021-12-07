@@ -1,4 +1,3 @@
-import { writeFile } from "fs/promises";
 import puppeteer from "puppeteer";
 
 /**
@@ -22,15 +21,7 @@ export default async function generateBoardImage(
     quality: 50,
   });
 
-  /* if (res instanceof Buffer) {
-    await writeFile("out.webp", res);
-  } */
   await browser.close();
 
   return res as Buffer;
 }
-/* 
-generateBoardImage(
-  "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R",
-  "black"
-); */
